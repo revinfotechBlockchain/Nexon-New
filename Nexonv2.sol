@@ -1,9 +1,10 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.6.0;
 
 //*****************************************************************************//
 //                        Coin Name : NEXON                                    //
 //                           Symbol : NEXON                                    //
 //                     Total Supply : 10,000,000                               //
+//                         Decimals : 18                                       //
 //                    Functionality : Staking, Rewards, Burn, Mint, Claim      //
 //*****************************************************************************//
 
@@ -191,7 +192,7 @@ contract Nexon is IERC20 {
   /**
     * @dev Total number of tokens in existence.
     */
-  function totalSupply() public view returns (uint256) {
+  function totalSupply() external view override returns (uint256) {
     return _totalSupply;
   }
 
@@ -200,7 +201,7 @@ contract Nexon is IERC20 {
     * @param owner The address to query the balance of.
     * @return A uint256 representing the amount owned by the passed address.
     */
-  function balanceOf(address owner) public view returns (uint256) {
+  function balanceOf(address owner) public view override returns (uint256) {
     return _balances[owner];
   }
 
@@ -210,7 +211,7 @@ contract Nexon is IERC20 {
     * @param spender address The address which will spend the funds.
     * @return A uint256 specifying the amount of tokens still available for the spender.
     */
-  function allowance(address owner, address spender) public view returns (uint256) {
+  function allowance(address owner, address spender) public view override returns (uint256) {
     return _allowed[owner][spender];
   }
 
@@ -225,7 +226,7 @@ contract Nexon is IERC20 {
    * @param to The address to transfer to.
    * @param value The amount to be transferred.
    */
-  function transfer(address to, uint256 value) public returns (bool) {
+  function transfer(address to, uint256 value) public override returns (bool) {
     _transfer(msg.sender, to, value);
     return true;
   }
@@ -236,7 +237,7 @@ contract Nexon is IERC20 {
     * @param to address The address which you want to transfer to
     * @param value uint256 the amount of tokens to be transferred
     */
-  function transferFrom(address from, address to, uint256 value) public returns (bool) {
+  function transferFrom(address from, address to, uint256 value) public override returns (bool) {
     _transfer(from, to, value);
     _approve(from, msg.sender, _allowed[from][msg.sender].sub(value));
     return true;
@@ -262,7 +263,7 @@ contract Nexon is IERC20 {
    * @param spender The address which will spend the funds.
    * @param value The amount of tokens to be spent.
    */
-  function approve(address spender, uint256 value) public returns (bool) {
+  function approve(address spender, uint256 value) public override returns (bool) {
     _approve(msg.sender, spender, value);
     return true;
   }
@@ -398,14 +399,14 @@ contract Nexon is IERC20 {
   // Mapping for ETH deposited by user 
   mapping(address=>uint256) private _ethDepositedByUser;
   
-  // Mapping to keep track of final withdraw value pof staked token
+  // Mapping to keep track of final withdraw value of staked token
   mapping(uint256=>uint256) private _finalWithdrawlStake;
 
   // Mapping for all stake id by user address
-  mapping(address=> mapping (uint256 => bool)) private _totalStakes;
+  // mapping(address=> mapping (uint256 => bool)) private _totalStakes;
 
   // Total number of stakes by user address
-  mapping(address => uint256) private _totalStakesByUser;
+  // mapping(address => uint256) private _totalStakesByUser;
   
   // Reward Percentage
   uint256 private _rewardPercentage;
@@ -420,7 +421,7 @@ contract Nexon is IERC20 {
   uint256 private _referralAmount = 0;
 
   // Rewards
-  uint256 private _rewards;
+  // uint256 private _rewards;
   
   // Count of no of staking
   uint256 private _stakingCount = 0;
@@ -508,7 +509,7 @@ contract Nexon is IERC20 {
   }
 
   /**
-   * @dev Function for setting penalty percentage percentage by owner
+   * @dev Function for setting penalty percentage by owner
    * @param penaltyPercentage penalty percentage 
    */
   function setPenaltyPercentage(uint256 penaltyPercentage) public onlyOwner returns(bool){
@@ -518,7 +519,7 @@ contract Nexon is IERC20 {
   }
 
   /**
-   * @dev Function for getting penalty percentage percentage
+   * @dev Function for getting penalty percentage
    */
   function getPenaltyPercentage() public view returns(uint256){
     return _penaltyPercentage;
@@ -577,7 +578,7 @@ contract Nexon is IERC20 {
   /**
    * @dev Function to blacklist any stake
    * @param status true/false
-   * @param stakingId stake id for that perticular stake
+   * @param stakingId stake id for that particular stake
    */
   function blacklistStake(bool status,uint256 stakingId) external onlyOwner returns(bool){
     _TokenTransactionstatus[stakingId] = status;
@@ -615,7 +616,7 @@ contract Nexon is IERC20 {
   }
 
   /**
-   * @dev Function to set Big Pay Percentage
+   * @dev Function to set Big Pay Day Percentage
    * @param newPercentage Big pay day reward percentage
    */
   function setBigPayDayPercentage(uint256 newPercentage) public onlyOwner returns(bool){
@@ -632,7 +633,7 @@ contract Nexon is IERC20 {
   }
   
   /**
-   * @dev Funtion to calaculate bigPayDay reward
+   * @dev Funtion to calculate bigPayDay reward
    * @param amount Big pay day reward percentage
    * @param endDate End date of the stake
    */
@@ -676,7 +677,7 @@ contract Nexon is IERC20 {
   }
   
   /**
-   * @dev Function to total ETH
+   * @dev Function to get total ETH
    */
   function getTotalETH() public view returns(uint256){
     return _totalETH;
@@ -715,7 +716,7 @@ contract Nexon is IERC20 {
    */
 
   /**
-   * @dev Function to get Final Withdraw Satked value
+   * @dev Function to get Final Withdraw Staked value
    * @param id stake id for the stake
    */
   function getFinalWithdrawlStake(uint256 id) public view returns(uint256){
@@ -750,7 +751,7 @@ contract Nexon is IERC20 {
   }
 
   /**
-   * @dev Function to get Staking tokens by id
+   * @dev Function to get active Staking tokens by id
    * @param id stake id for the stake
    */
   function getStakingTokenById(uint256 id)public view returns(uint256){
@@ -840,7 +841,7 @@ contract Nexon is IERC20 {
   function withdrawStakedTokens(uint256 stakingId) public returns(bool){
     require(_stakerAddress[stakingId] == msg.sender,"No staked token found on this address and ID");
     require(_TokenTransactionstatus[stakingId] != true,"Either tokens are already withdrawn or blocked by admin");
-    require(balanceOf(_tokenPoolAddress) > _usersTokens[stakingId], "Pool is dry, can perform transaction");
+    require(balanceOf(_tokenPoolAddress) > _usersTokens[stakingId], "Pool is dry, can not perform transaction");
     uint256 paneltyAtWithdraw = getPaneltyIfWithdrawToday(stakingId);
     _TokenTransactionstatus[stakingId] = true;
     _finalWithdrawlStake[stakingId] = _usersTokens[stakingId]-paneltyAtWithdraw+getRewardsDetailsOfUserById(stakingId);
@@ -905,7 +906,7 @@ contract Nexon is IERC20 {
    * @param _snapshotBalance balance of whitelisted addresses
    * @return bool response for the status of execution
    */
-  function whitelistaddressForClaim(address[]  _userAddressArray, uint256[]   _snapshotBalance) external onlyOwner returns(bool){
+  function whitelistaddressForClaim(address[]  calldata _userAddressArray, uint256[] calldata  _snapshotBalance) external onlyOwner returns(bool){
     require(_userAddressArray.length == _snapshotBalance.length,"Invalid Array");
     uint256 count = _userAddressArray.length;
     for (uint256 i = 0; i < count; i++){
@@ -916,7 +917,7 @@ contract Nexon is IERC20 {
   }
 
   /**
-   * @dev modifier to check if the claiming address validations
+   * @dev modifier to check the claiming address validations
    * @param _claimingAddress address of the user claiming the token with snapshot
    */
   modifier checkBlocker(address _claimingAddress, uint256 _claimableTokens){
@@ -933,12 +934,15 @@ contract Nexon is IERC20 {
    * @dev Whitelist addresses and amount for claim-able check
    * @param _amountToClaim Amount of tokens staked in the wallet
    */
-  function performClaim(uint256 _amountToClaim) external checkBlocker(msg.sender,_amountToClaim) returns(bool){
-    //Code to perform stake to be paste here
-
-
-
-    
+  function performClaim(uint256 _amountToClaim) external checkBlocker(msg.sender,_amountToClaim) validatorForStaking(_amountToClaim, now + 31536000) returns(bool){
+    //This code will perform stake of the number of token for next 1 year of 365 days
+    _stakingCount = _stakingCount +1;
+    _stakerAddress[_stakingCount] = msg.sender;
+    _stakingEndTime[_stakingCount] = now + 31536000;
+    _stakingStartTime[_stakingCount] = now;
+    _usersTokens[_stakingCount] = _amountToClaim;
+    _TokenTransactionstatus[_stakingCount] = false;
+    holderAddressBlockList[msg.sender] = true;
   }
 
   /**
